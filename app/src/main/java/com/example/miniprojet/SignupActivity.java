@@ -117,6 +117,10 @@ public class SignupActivity extends AppCompatActivity {
                                         databaseReference.child("users").child(phone).child("phone").setValue(phone);
                                         databaseReference.child("users").child(phone).child("password").setValue(password);
                                         Toast.makeText(SignupActivity.this, "User Registered Successfuly", Toast.LENGTH_SHORT).show();
+
+                                        Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
+                                        startActivity(intent);
+                                        finish();
                                     }
                                 }
                                 @Override

@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
                                 foundHim = true;
                                 if(pass2 != null && pass2.equals(password)){
                                     Toast.makeText(MainActivity.this, "Welcome User", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
+                                    startActivity(intent);
+                                    finish();
                                 }else{
                                     Toast.makeText(MainActivity.this, "Check Your Email/Password", Toast.LENGTH_SHORT).show();
                                 }
