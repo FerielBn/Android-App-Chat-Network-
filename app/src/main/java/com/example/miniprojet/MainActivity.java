@@ -11,8 +11,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://miniprojet-android-8900a-default-rtdb.firebaseio.com");
     private EditText emailInput, passwordInput;
     private Button signupBtn, loginBtn;
 
@@ -48,6 +54,35 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Enter password", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        boolean foundHim = false;
+                        for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                            String email2 = userSnapshot.child("email").getValue(String.class);
+                            String pass2 = userSnapshot.child("password").getValue(String.class);
+
+                            if (email2 != null && email2.equals(email)) {
+                                // i have found the email
+                                foundHim = true;
+                                if(pass2 != null && pass2.equals(password)){
+                                    Toast.makeText(MainActivity.this, "Welcome User", Toast.LENGTH_SHORT).show();
+                                }else{
+                                    Toast.makeText(MainActivity.this, "Check Your Email/Password", Toast.LENGTH_SHORT).show();
+                                }
+                                break;
+                            }
+                        }
+                        if (!foundHim) {
+                            // There's no user with that email
+                            Toast.makeText(MainActivity.this, "There's no user with that email ", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
 
 
             }
