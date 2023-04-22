@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1068475665405",
+    "project_id": "miniprojet-android-8900a",
+    "storage_bucket": "miniprojet-android-8900a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068475665405:android:efa41569386f1542aae794",
+        "android_client_info": {
+          "package_name": "com.example.miniprojet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1068475665405-95g0f8vfgdh6h2gqtoavqdlomkjdqkr5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBn4q4Fyo4SbyaZrvJjO7Rmm5Hps_IMWZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1068475665405-95g0f8vfgdh6h2gqtoavqdlomkjdqkr5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
