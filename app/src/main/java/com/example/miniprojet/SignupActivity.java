@@ -25,10 +25,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import AppClasses.User;
+
 public class SignupActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://miniprojet-android-8900a-default-rtdb.firebaseio.com");
     private EditText usernameInput, emailInput,phoneInput, passwordInput,confPassInput;
     private Button signupBtn, loginBtn;
+
 
 
     @Override
@@ -57,11 +60,11 @@ public class SignupActivity extends AppCompatActivity {
     private void initEvent() {
         SharedPreferences shared = getSharedPreferences("user_data", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = shared.edit();
-        if(shared.getBoolean("logged",false)){
+        /*if(shared.getBoolean("logged",false)){
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             finish();
-        }
+        }*/
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,63 +104,17 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
+                Runnable success = ()->{
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                };
+                Runnable fail = ()->{
+                    Log.d("callback","jawna mouch bahi");
+                };
 
-
-                databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        // check if email exist already
-                        if(snapshot.hasChild(phone)){
-                            Toast.makeText(SignupActivity.this,"Phone Already used", Toast.LENGTH_SHORT).show();
-                            return;
-                        }else{
-
-                            databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    boolean emailExists = false;
-                                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                                        String email2 = userSnapshot.child("email").getValue(String.class);
-
-                                        if (email2 != null && email2.equals(email)) {
-                                            Toast.makeText(SignupActivity.this,"Email Already exist", Toast.LENGTH_SHORT).show();
-                                            emailExists = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!emailExists) {
-                                        databaseReference.child("users").child(phone).child("username").setValue(username);
-                                        databaseReference.child("users").child(phone).child("email").setValue(email);
-                                        databaseReference.child("users").child(phone).child("phone").setValue(phone);
-                                        databaseReference.child("users").child(phone).child("password").setValue(password);
-                                        editor.putString("email", email);
-                                        editor.putString("phone", phone);
-                                        editor.putString("username", username);
-                                        editor.putBoolean("logged", true);
-                                        editor.apply();
-                                        Toast.makeText(SignupActivity.this, "User Registered Successfuly", Toast.LENGTH_SHORT).show();
-
-                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }
-                                }
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                }
-                            });
-
-
-
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-
+                User user = new User(phone,username,email,password);
+                user.UserRegister(SignupActivity.this,success,fail);
 
 
 

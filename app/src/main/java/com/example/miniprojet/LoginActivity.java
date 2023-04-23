@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,10 +20,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import AppClasses.User;
+
 public class LoginActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://miniprojet-android-8900a-default-rtdb.firebaseio.com");
     private EditText emailInput, passwordInput;
     private Button signupBtn, loginBtn;
+    private User user;
 
 
 
@@ -46,11 +50,11 @@ public class LoginActivity extends AppCompatActivity {
 
         SharedPreferences shared = getSharedPreferences("user_data", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = shared.edit();
-        if(shared.getBoolean("logged",false)){
+        /*if(shared.getBoolean("logged",false)){
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             finish();
-        }
+        }*/
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,6 +86,8 @@ public class LoginActivity extends AppCompatActivity {
                                 foundHim = true;
                                 if(pass2 != null && pass2.equals(password)){
                                     Toast.makeText(LoginActivity.this, "Welcome User", Toast.LENGTH_SHORT).show();
+                                    user = new User(phone,username,email,password,LoginActivity.this);
+                                    Log.d("User Data",user.toString());
                                     editor.putString("email", email);
                                     editor.putString("phone", phone);
                                     editor.putString("username", username);
