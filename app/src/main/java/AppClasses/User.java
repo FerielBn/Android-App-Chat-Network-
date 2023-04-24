@@ -73,6 +73,7 @@ public class User {
         editor.putString("password", this.password);
         editor.putString("user_img", this.user_img);
         editor.putBoolean("connected", true);
+        editor.apply();
         // everytime we set the storage we confirm that the user is really connected
         this.connected=true;
     }
@@ -101,7 +102,7 @@ public class User {
 
     // ****************************** THIS IS CONNECTION ****************************** //
     // this is for logout : i will remove user infos and set the connected to false
-    public void Logout(Context context) {
+    public void UserLogout(Context context) {
         this.num_tel = "";
         this.userName  = "";
         this.email = "";
@@ -118,6 +119,7 @@ public class User {
         editor.putString("password", "");
         editor.putString("user_img", "");
         editor.putBoolean("connected", false);
+        editor.apply();
     }
 
 

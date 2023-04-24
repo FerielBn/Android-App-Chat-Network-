@@ -39,6 +39,16 @@ public class SignupActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+
+        User user = new User();
+        user.GetFromStorage(SignupActivity.this);
+
+        if(user.connected){
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         initView();
         initEvent();
     }
@@ -58,13 +68,6 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void initEvent() {
-        SharedPreferences shared = getSharedPreferences("user_data", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = shared.edit();
-        /*if(shared.getBoolean("logged",false)){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            finish();
-        }*/
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

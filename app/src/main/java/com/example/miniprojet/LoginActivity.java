@@ -35,6 +35,15 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        User user = new User();
+        user.GetFromStorage(LoginActivity.this);
+
+        if(user.connected){
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         initView();
         initEvent();
     }
@@ -47,7 +56,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initEvent() {
-
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

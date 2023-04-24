@@ -15,6 +15,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.navigation.NavigationView;
 
+import AppClasses.User;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
@@ -23,15 +25,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        User user = new User();
+        user.GetFromStorage(MainActivity.this);
 
-        if(true){
+        if(!user.connected){
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             finish();
         }
-//        else{
-//            textView.setText(user.getEmail);
-//        }
 
 
         Toolbar toolbar = findViewById(R.id.toolbar); // Replace with your actual Toolbar ID
@@ -89,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                User user = new User();
+                user.UserLogout(MainActivity.this);
+
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
                 finish();
