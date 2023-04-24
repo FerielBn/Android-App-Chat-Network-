@@ -48,18 +48,22 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initEvent() {
 
-        SharedPreferences shared = getSharedPreferences("user_data", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = shared.edit();
-        /*if(shared.getBoolean("logged",false)){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            finish();
-        }*/
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = String.valueOf(emailInput.getText());
                 String password = String.valueOf(passwordInput.getText());
+                User user = new User();
+                user.GetFromStorage(LoginActivity.this);
+                Log.d("blablabla","blablabla");
+                Log.d("blablabla",user.toString());
+                if(user.connected){
+                    Log.d("connected","user is really connected");
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
 
                 if(TextUtils.isEmpty(email)){
                     Toast.makeText(LoginActivity.this, "Enter email", Toast.LENGTH_SHORT).show();
@@ -70,47 +74,17 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Enter password", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // hello world
-                databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        boolean foundHim = false;
-                        for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                            String email2 = userSnapshot.child("email").getValue(String.class);
-                            String phone = userSnapshot.child("phone").getValue(String.class);
-                            String username = userSnapshot.child("username").getValue(String.class);
-                            String pass2 = userSnapshot.child("password").getValue(String.class);
 
-                            if (email2 != null && email2.equals(email)) {
-                                // i have found the email
-                                foundHim = true;
-                                if(pass2 != null && pass2.equals(password)){
-                                    Toast.makeText(LoginActivity.this, "Welcome User", Toast.LENGTH_SHORT).show();
-                                    user = new User(phone,username,email,password,LoginActivity.this);
-                                    Log.d("User Data",user.toString());
-                                    editor.putString("email", email);
-                                    editor.putString("phone", phone);
-                                    editor.putString("username", username);
-                                    editor.putBoolean("logged", true);
-                                    editor.apply();
-                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }else{
-                                    Toast.makeText(LoginActivity.this, "Check Your Email/Password", Toast.LENGTH_SHORT).show();
-                                }
-                                break;
-                            }
-                        }
-                        if (!foundHim) {
-                            // There's no user with that email
-                            Toast.makeText(LoginActivity.this, "There's no user with that email ", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
+                Runnable success = ()->{
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                };
+                Runnable fail = ()->{
+                    Log.d("callback","jawna mouch bahi");
+                };
+                user.UserLogin(LoginActivity.this,email,password,success,fail);
+
 
 
             }

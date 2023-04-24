@@ -45,6 +45,17 @@ public class User {
         this.connected=false;
     }
 
+
+
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+        this.connected=false;
+    }
+
+    public User() {
+    }
+
     // this is for getting a user in application after login and register / like in normal page
     public User(Context context) {
         this.GetFromStorage(context);
@@ -76,6 +87,16 @@ public class User {
         this.user_img = shared.getString("user_img", "https://res.cloudinary.com/hatem/image/upload/v1641410201/avatars/pjyi7s4od1pqhl1sibyn.png");
         this.connected = shared.getBoolean("connected", false);
     }
+
+    public void UpdateUser(User user,Context context){
+        this.userName = user.userName;
+        this.password = user.password;
+        this.num_tel = user.num_tel;
+        this.user_img = user.user_img;
+        this.email = user.email;
+        this.connected = true;
+        this.UpdateStorage(context);
+    }
     // ****************************** THIS IS STORAGE ****************************** //
 
     // ****************************** THIS IS CONNECTION ****************************** //
@@ -99,26 +120,46 @@ public class User {
         editor.putBoolean("connected", false);
     }
 
-    public void  UserLogin(String email,String password,Context context){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://miniprojet-android-8900a-default-rtdb.firebaseio.com");
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        Query query = database.getReference("users").orderByChild("email").equalTo(email);
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+    public void UserLogin(Context context,String email,String password,Runnable succ,Runnable fail){
+        User user = this;
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersBD = database.getReference("users");
+        // query to check if email already used
+        Query checkMail = usersBD.orderByChild("email").equalTo(email);
+
+        checkMail.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot userSnapshot : snapshot.getChildren()){
-                    User user = userSnapshot.getValue(User.class);
-                    Log.d( "User found: " , user.userName);
+                if(snapshot.exists()){
+                    Toast.makeText(context, "Email Exist", Toast.LENGTH_SHORT).show();
+                    for (DataSnapshot snap_data : snapshot.getChildren()) {
+                        User bd_user = snap_data.getValue(User.class);
+                        if(bd_user.password.equals(password)){
+                            Toast.makeText(context, "Welcome " + bd_user.userName, Toast.LENGTH_SHORT).show();
+                            user.UpdateUser(bd_user,context);
+                            Log.d("user_connect",user.toString());
+                            succ.run();
+                        }else{
+                            Toast.makeText(context, "Wrong Password ", Toast.LENGTH_SHORT).show();
+                            fail.run();
+                        }
+                    }
+                }
+                else{
+                    Toast.makeText(context, "No User With That Email", Toast.LENGTH_SHORT).show();
+                    fail.run();
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Failed to retrieve user", "error.toException()");
+                Log.d("user login error","error error");
+                fail.run();
             }
         });
     }
+
+
 
     public void UserRegister(Context context,Runnable succ,Runnable fail){
         User user = this;
