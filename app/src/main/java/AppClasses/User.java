@@ -1,16 +1,12 @@
 package AppClasses;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.miniprojet.MainActivity;
-import com.example.miniprojet.SignupActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,13 +24,13 @@ public class User {
 
     // ****************************** THIS IS CONSTRUCTORS ****************************** //
     // this is for creating a user by register or login
-    public User(String num_tel, String userName , String email, String password, Context context) {
+    public User(String num_tel, String userName , String email, String password, SharedPreferences shared) {
         this.num_tel = num_tel;
         this.userName  = userName ;
         this.email = email;
         this.password = password;
         this.connected=true;
-        this.UpdateStorage(context);
+        this.UpdateStorage(shared);
     }
 
     public User(String num_tel, String userName , String email, String password) {
@@ -57,15 +53,14 @@ public class User {
     }
 
     // this is for getting a user in application after login and register / like in normal page
-    public User(Context context) {
-        this.GetFromStorage(context);
+    public User(SharedPreferences shared) {
+        this.GetFromStorage(shared);
     }
     // ****************************** THIS IS CONSTRUCTORS ****************************** //
 
     // ****************************** THIS IS STORAGE ****************************** //
-    public void UpdateStorage(Context context){
+    public void UpdateStorage(SharedPreferences shared){
         // here we add data to local storage
-        SharedPreferences shared = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = shared.edit();
         editor.putString("num_tel", this.num_tel);
         editor.putString("userName ", this.userName );
@@ -77,9 +72,8 @@ public class User {
         this.connected=true;
     }
 
-    public void GetFromStorage(Context context){
+    public void GetFromStorage(SharedPreferences shared){
         // here we will get the data from storage and set it in user
-        SharedPreferences shared = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         this.num_tel =  shared.getString("num_tel", "");
         this.userName  = shared.getString("userName ", "");
         this.email = shared.getString("email", "");
@@ -88,20 +82,20 @@ public class User {
         this.connected = shared.getBoolean("connected", false);
     }
 
-    public void UpdateUser(User user,Context context){
+    public void UpdateUser(User user,SharedPreferences shared){
         this.userName = user.userName;
         this.password = user.password;
         this.num_tel = user.num_tel;
         this.user_img = user.user_img;
         this.email = user.email;
         this.connected = true;
-        this.UpdateStorage(context);
+        this.UpdateStorage(shared);
     }
     // ****************************** THIS IS STORAGE ****************************** //
 
     // ****************************** THIS IS CONNECTION ****************************** //
     // this is for logout : i will remove user infos and set the connected to false
-    public void Logout(Context context) {
+    public void Logout(SharedPreferences shared) {
         this.num_tel = "";
         this.userName  = "";
         this.email = "";
@@ -110,7 +104,6 @@ public class User {
         this.connected=false;
 
         // here we add data to local storage
-        SharedPreferences shared = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = shared.edit();
         editor.putString("num_tel", "");
         editor.putString("userName ", "");
@@ -121,7 +114,7 @@ public class User {
     }
 
 
-    public void UserLogin(Context context,String email,String password,Runnable succ,Runnable fail){
+    public void UserLogin(SharedPreferences shared,Context context,String email,String password,Runnable succ,Runnable fail){
         User user = this;
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersBD = database.getReference("users");
@@ -137,7 +130,7 @@ public class User {
                         User bd_user = snap_data.getValue(User.class);
                         if(bd_user.password.equals(password)){
                             Toast.makeText(context, "Welcome " + bd_user.userName, Toast.LENGTH_SHORT).show();
-                            user.UpdateUser(bd_user,context);
+                            user.UpdateUser(bd_user,shared);
                             Log.d("user_connect",user.toString());
                             succ.run();
                         }else{
@@ -161,7 +154,7 @@ public class User {
 
 
 
-    public void UserRegister(Context context,Runnable succ,Runnable fail){
+    public void UserRegister(SharedPreferences shared,Context context,Runnable succ,Runnable fail){
         User user = this;
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersBD = database.getReference("users");
@@ -186,7 +179,7 @@ public class User {
                             }
                             else{
                                 usersBD.child(num_tel).setValue(user);
-                                user.UpdateStorage(context);
+                                user.UpdateStorage(shared);
                                 Toast.makeText(context, "User Registered Successfuly", Toast.LENGTH_SHORT).show();
                                 succ.run();
                             }

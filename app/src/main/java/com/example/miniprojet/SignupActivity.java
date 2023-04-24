@@ -28,7 +28,6 @@ import com.google.firebase.database.ValueEventListener;
 import AppClasses.User;
 
 public class SignupActivity extends AppCompatActivity {
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://miniprojet-android-8900a-default-rtdb.firebaseio.com");
     private EditText usernameInput, emailInput,phoneInput, passwordInput,confPassInput;
     private Button signupBtn, loginBtn;
 
@@ -58,13 +57,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void initEvent() {
-        SharedPreferences shared = getSharedPreferences("user_data", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = shared.edit();
-        /*if(shared.getBoolean("logged",false)){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            finish();
-        }*/
+        SharedPreferences shared = getSharedPreferences("user", Context.MODE_PRIVATE);
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,7 +107,7 @@ public class SignupActivity extends AppCompatActivity {
                 };
 
                 User user = new User(phone,username,email,password);
-                user.UserRegister(SignupActivity.this,success,fail);
+                user.UserRegister(shared,SignupActivity.this,success,fail);
 
 
 

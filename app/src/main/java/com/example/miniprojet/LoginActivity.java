@@ -23,7 +23,6 @@ import com.google.firebase.database.ValueEventListener;
 import AppClasses.User;
 
 public class LoginActivity extends AppCompatActivity {
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://miniprojet-android-8900a-default-rtdb.firebaseio.com");
     private EditText emailInput, passwordInput;
     private Button signupBtn, loginBtn;
     private User user;
@@ -47,14 +46,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initEvent() {
-
+        SharedPreferences shared = getSharedPreferences("user", Context.MODE_PRIVATE);
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = String.valueOf(emailInput.getText());
                 String password = String.valueOf(passwordInput.getText());
                 User user = new User();
-                user.GetFromStorage(LoginActivity.this);
+                user.GetFromStorage(shared);
                 Log.d("blablabla","blablabla");
                 Log.d("blablabla",user.toString());
                 if(user.connected){
@@ -83,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                 Runnable fail = ()->{
                     Log.d("callback","jawna mouch bahi");
                 };
-                user.UserLogin(LoginActivity.this,email,password,success,fail);
+                user.UserLogin(shared,LoginActivity.this,email,password,success,fail);
 
 
 
