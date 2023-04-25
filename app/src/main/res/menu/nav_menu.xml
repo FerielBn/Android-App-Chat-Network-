@@ -13,19 +13,24 @@
             android:title="Home"/>
 
         <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/nav_settings"
-            android:title="Settings"/>
+            android:id="@+id/nav_room"
+            android:icon="@drawable/chat_group"
+            android:title="My Rooms" />
 
         <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/nav_share"
-            android:title="Share"/>
+            android:id="@+id/nav_global_chat"
+            android:icon="@drawable/earth__1_"
+            android:title="Global Chat" />
 
         <item
-            android:id="@+id/nav_about"
-            android:icon="@drawable/nav_about"
-            android:title="About"/>
+            android:id="@+id/nav_friends"
+            android:icon="@drawable/friends"
+            android:title="Friends" />
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/user"
+            android:title="My Profile" />
 
 
     </group>
@@ -34,6 +39,18 @@
         android:title="">
 
         <menu>
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/nav_about"
+                android:title="About" />
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/nav_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/nav_settings"
+                android:title="Settings" />
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/nav_logout"
