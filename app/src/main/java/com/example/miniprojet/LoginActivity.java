@@ -14,6 +14,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -68,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                 String password = String.valueOf(passwordInput.getText());
                 User user = new User();
                 user.GetFromStorage(LoginActivity.this);
+                Log.d("blablabla","blablabla");
                 Log.d("blablabla",user.toString());
                 if(user.connected){
                     Log.d("connected","user is really connected");

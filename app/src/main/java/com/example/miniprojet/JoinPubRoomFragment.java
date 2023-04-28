@@ -1,22 +1,17 @@
 package com.example.miniprojet;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,32 +19,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import Adapters.AdapterOneRoom;
+import Adapters.AdapterOneRoomImg;
 import AppClasses.Room;
+import AppClasses.User;
 import Interfaces.OnDataRecievedRoom;
 import Interfaces.OnDataRecievedRooms;
 
-public class MyRoomFragment extends Fragment implements LifecycleOwner {
-
-    private Lifecycle lifecycle;
-    private Button CreateRoomBtn;
-
-    private RecyclerView RoomsCreatedByMeRV;
-    private ArrayList<Room> created_rooms;
-
-
-    @Nullable
+public class JoinPubRoomFragment extends Fragment {
+    private RecyclerView RoomsListRV;
+    private ArrayList<Room> public_rooms;
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my_rooms, container, false);
-        CreateRoomBtn = view.findViewById(R.id.CreateBtn);
-        RoomsCreatedByMeRV = view.findViewById(R.id.CreatedRoomsRV);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+        View view =  inflater.inflate(R.layout.fragment_join_pub_room, container, false);
+        RoomsListRV = view.findViewById(R.id.publi_rooms_RV);
         return view;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        lifecycle = getLifecycle();
 
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
         if (SDK_INT > 8)
@@ -57,6 +45,8 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
             StrictMode.setThreadPolicy(policy);
+            //your codes here
+
         }
     }
 
@@ -66,24 +56,28 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
     public void onStart() {
         super.onStart();
 
+
+
         Room room = new Room();
-        room.GetMyCreatedRooms(getContext(), new OnDataRecievedRooms() {
+        room.GetPublicRooms(getContext(), new OnDataRecievedRooms() {
             @Override
             public void callback(ArrayList<Room> rooms) {
                 Log.d("Public rooms",rooms.toString());
-                created_rooms = rooms;
-
-                AdapterOneRoom adapter = new AdapterOneRoom(getContext(), created_rooms, R.layout.one_room_item_white, new OnDataRecievedRoom() {
+                public_rooms = rooms;
+                if(rooms.size()==0){
+                    Toast.makeText(getContext(), "You already joined all rooms", Toast.LENGTH_SHORT).show();
+                }
+                AdapterOneRoom adapter = new AdapterOneRoom(getContext(), public_rooms, R.layout.one_room_item, new OnDataRecievedRoom() {
                     @Override
                     public void callback(Room room) {
                         if(room == null){
-                            MyRoomFragment fragment =  new MyRoomFragment();
+                            MyJoinedRoomFragment myJoinedRoomFragment =  new MyJoinedRoomFragment();
                             FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                            transaction.replace(R.id.fragment_container, fragment);
+                            transaction.replace(R.id.fragment_container, myJoinedRoomFragment);
                             transaction.addToBackStack(null);
                             transaction.commit();
                         }
-                        else{
+                       else{
                             Log.d("room_from_adapter",room.room_name);
                             // go to chat
                             ChatChatChatRoomFragment charRoomFragment =  new ChatChatChatRoomFragment();
@@ -100,58 +94,28 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
                     }
                 });
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),1,GridLayoutManager.VERTICAL,false);
-                RoomsCreatedByMeRV.setLayoutManager(gridLayoutManager);
-                RoomsCreatedByMeRV.setAdapter(adapter);
-                RoomsCreatedByMeRV.setClickable(true);
+                RoomsListRV.setLayoutManager(gridLayoutManager);
+                RoomsListRV.setAdapter(adapter);
+                RoomsListRV.setClickable(true);
             }
         });
 
 
 
-        CreateRoomBtn.setOnClickListener(new View.OnClickListener() {
+        /*room.GetMyCreatedRooms(getContext(), new OnDataRecievedRooms() {
             @Override
-            public void onClick(View view) {
-                CreateRoomFragment newFragment = new CreateRoomFragment();
-
-                Bundle bundle = new Bundle();
-                bundle.putString("key", "AYA 9OLNA SALAM");
-
-                newFragment.setArguments(bundle);
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, newFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
+            public void callback(ArrayList<Room> rooms) {
+                Log.d("Created rooms",rooms.toString());
             }
         });
 
-    }
+        room.GetMyJoinedRooms(getContext(), new OnDataRecievedRooms() {
+            @Override
+            public void callback(ArrayList<Room> rooms) {
+                Log.d("Joined rooms",rooms.toString());
+            }
+        });*/
 
-    @Override
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    public void onResume() {
-        // Do something when the fragment is resumed
-        super.onResume();
-    }
-
-    @Override
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public void onPause() {
-        // Do something when the fragment is paused
-        super.onPause();
-    }
-
-    @Override
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    public void onStop() {
-        // Do something when the fragment is stopped
-        super.onStop();
-    }
-
-    @Override
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    public void onDestroy() {
-        // Do something when the fragment is destroyed
-        super.onDestroy();
     }
 
 
