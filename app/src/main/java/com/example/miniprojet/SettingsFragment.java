@@ -50,10 +50,6 @@ public class SettingsFragment extends Fragment {
         currentUser.GetFromStorage(getContext());
         Log.d("current user is ", currentUser.toString());
 
-        FirebaseAuth firebaseAuth;
-        firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        Log.d("firebaseuser", user.toString());
 
         update_password_btn = view.findViewById(R.id.updatePasswordBT);
         update_password_btn.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +140,10 @@ public class SettingsFragment extends Fragment {
 //
 ////        get currrent user
 //
+//        FirebaseAuth firebaseAuth;
+//        firebaseAuth = FirebaseAuth.getInstance();
+//        FirebaseUser user = firebaseAuth.getCurrentUser();
+//        Log.d("firebaseuser", user.toString());
 //
 ////        validate data
 //        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.email, currentPassword);
