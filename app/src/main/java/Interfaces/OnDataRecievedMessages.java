@@ -2,8 +2,8 @@ package Interfaces;
 
 import java.util.ArrayList;
 
-import AppClasses.Room;
+import AppClasses.Message;
 
-public interface OnDataRecievedRooms {
-    void callback(ArrayList<Room> public_rooms);
+public interface OnDataRecievedMessages {
+    void callback(ArrayList<Message> messages);
 }

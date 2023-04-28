@@ -1,5 +1,6 @@
 package Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -68,7 +69,7 @@ public class AdapterOneRoomImg extends RecyclerView.Adapter<AdapterOneRoomImg.Vi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
        // holder.image.setImageBitmap( getImageBitmap(images.get(position) ));
         Glide.with(this.context)
                 .load(images.get(position))

@@ -18,6 +18,11 @@
             android:title="My Rooms" />
 
         <item
+            android:id="@+id/nav_room_joined"
+            android:icon="@drawable/chat_group"
+            android:title="Joined Rooms" />
+
+        <item
             android:id="@+id/nav_global_chat"
             android:icon="@drawable/earth__1_"
             android:title="Global Chat" />

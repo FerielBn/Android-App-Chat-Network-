@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#8591F6"
-    tools:context=".CreateRoomFragment">
+    tools:context=".JoinPubRoomFragment">
 
 
     <LinearLayout
@@ -19,76 +18,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="Join Private Room"
+            android:text="Join Public  Room"
             android:textAlignment="center"
-            android:textColor="@color/white"
+            android:textColor="@color/lavender"
             android:textSize="34sp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/room_name"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="200dp"
-            android:backgroundTint="@android:color/white"
-            android:ems="10"
-            android:hint="Room Name"
-            android:inputType="textPersonName"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="25dp" />
-
-        <EditText
-            android:id="@+id/room_key"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="80dp"
-            android:backgroundTint="@android:color/white"
-            android:ems="10"
-            android:hint="Room Secret Key"
-            android:inputType="textPersonName"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="25dp"
-            android:layout_marginBottom="40dp"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/publi_rooms_RV"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 
-        <LinearLayout
-            android:layout_width="320dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:weightSum="2">
-
-
-                <Button
-                    android:id="@+id/CancelPrivBtn"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:text="Cancel"
-                    android:background="@drawable/btn_bg_outline"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:textSize="16dp"/>
-
-            <Button
-                android:id="@+id/JoinPrivRoomBtn"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/btn_bg"
-                android:text="Join"
-                android:textColor="@color/lavender"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-            </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

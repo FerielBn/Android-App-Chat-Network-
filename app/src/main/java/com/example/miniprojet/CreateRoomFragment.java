@@ -22,6 +22,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import AppClasses.Room;
+
 public class CreateRoomFragment extends Fragment implements LifecycleOwner, AdapterView.OnItemSelectedListener{
     private Lifecycle lifecycle;
     private Spinner RoomAccess ;
@@ -45,8 +47,8 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
         RoomKey = view.findViewById(R.id.room_key);
         RoomName = view.findViewById(R.id.room_name);
         AddImgBtn = view.findViewById(R.id.AddImgBtn);
-        CancelBtn = view.findViewById(R.id.CancelBtn);
-        SubmitBtn = view.findViewById(R.id.CreateRoomBtn);
+        CancelBtn = view.findViewById(R.id.CancelPrivBtn);
+        SubmitBtn = view.findViewById(R.id.JoinPrivRoomBtn);
         return view;
     }
 
@@ -62,7 +64,7 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
         super.onStart();
         Bundle bundle = getArguments();
         if (bundle != null) {
-            String value = bundle.getString("image","failed");
+            String value = bundle.getString("image","");
             this.room_selected_img = value;
         }
 
@@ -132,6 +134,17 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
                 Log.d("create_room",room_selected_categ);
                 Log.d("create_room",room_key);
                 Log.d("create_room",room_selected_img);
+                boolean room_public = room_selected_access.equals("Public");
+
+                Room room = new Room(room_name,room_key,room_selected_categ,room_selected_img,room_public,getContext());
+                room.CreateRoom(getContext());
+
+                MyRoomFragment myRoomFragment = new MyRoomFragment();
+
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, myRoomFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 

@@ -123,7 +123,7 @@ public class User {
     }
 
 
-    public void UserLogin(Context context,String email,String password,Runnable succ,Runnable fail){
+    /*public void UserLogin(Context context,String email,String password,Runnable succ,Runnable fail){
         User user = this;
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersBD = database.getReference("users");
@@ -134,7 +134,6 @@ public class User {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
-                    Toast.makeText(context, "Email Exist", Toast.LENGTH_SHORT).show();
                     for (DataSnapshot snap_data : snapshot.getChildren()) {
                         User bd_user = snap_data.getValue(User.class);
                         if(bd_user.password.equals(password)){
@@ -156,6 +155,43 @@ public class User {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("user login error","error error");
+                fail.run();
+            }
+        });
+    }*/
+
+
+    public void UserLogin(Context context,String email,String password,Runnable succ,Runnable fail){
+        User user = this;
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersBD_ref = database.getReference("users");
+        usersBD_ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Boolean exist=false;
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    User bd_user = userSnapshot.getValue(User.class);
+                    Log.d("user_from_bd",bd_user.toString());
+                    if(bd_user.email.equals(email)){
+                        if(bd_user.password.equals(password)){
+                            Toast.makeText(context, "Welcome " + bd_user.userName, Toast.LENGTH_SHORT).show();
+                            user.UpdateUser(bd_user,context);
+                            Log.d("user_connect",user.toString());
+                            exist=true;
+                            succ.run();
+                        }else{
+                            Toast.makeText(context, "Wrong Password ", Toast.LENGTH_SHORT).show();
+                            fail.run();
+                        }
+                    }
+                }
+                if(!exist){
+                   Toast.makeText(context, "No User With That Email", Toast.LENGTH_SHORT).show();
+                    fail.run();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
                 fail.run();
             }
         });

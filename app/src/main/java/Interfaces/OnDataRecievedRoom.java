@@ -4,6 +4,6 @@ import java.util.ArrayList;
 
 import AppClasses.Room;
 
-public interface OnDataRecievedRooms {
-    void callback(ArrayList<Room> public_rooms);
+public interface OnDataRecievedRoom {
+    void callback(Room room);
 }

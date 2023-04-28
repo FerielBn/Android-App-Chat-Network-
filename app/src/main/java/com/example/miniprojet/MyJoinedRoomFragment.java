@@ -1,6 +1,5 @@
 package com.example.miniprojet;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -8,14 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -25,16 +22,13 @@ import java.util.ArrayList;
 
 import Adapters.AdapterOneRoom;
 import AppClasses.Room;
+import Interfaces.OnDataRecievedRoom;
 import Interfaces.OnDataRecievedRooms;
 
-public class MyRoomFragment extends Fragment implements LifecycleOwner {
+public class MyJoinedRoomFragment extends Fragment implements LifecycleOwner {
 
     private Lifecycle lifecycle;
-    private Button CreateRoomBtn;
     private Button JoiRoomBtn;
-
-    private RecyclerView RoomsCreatedByMeRV;
-    private ArrayList<Room> created_rooms;
     private RecyclerView JoinedRoomsRV;
     private ArrayList<Room> joined_rooms;
 
@@ -42,10 +36,8 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my_rooms, container, false);
-        CreateRoomBtn = view.findViewById(R.id.CreateBtn);
+        View view = inflater.inflate(R.layout.fragment_my_joined_room, container, false);
         JoiRoomBtn = view.findViewById(R.id.JoinBtn);
-        RoomsCreatedByMeRV = view.findViewById(R.id.CreatedRoomsRV);
         JoinedRoomsRV = view.findViewById(R.id.JoinedRoomsRV);
         return view;
     }
@@ -70,26 +62,7 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
     public void onStart() {
         super.onStart();
 
-
-        CreateRoomFragment create_room_fragm =  new CreateRoomFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, create_room_fragm);
-        transaction.addToBackStack(null);
-
         Room room = new Room();
-        room.GetMyCreatedRooms(getContext(), new OnDataRecievedRooms() {
-            @Override
-            public void callback(ArrayList<Room> rooms) {
-                Log.d("Public rooms",rooms.toString());
-                created_rooms = rooms;
-
-                AdapterOneRoom adapter = new AdapterOneRoom(getContext(),created_rooms,create_room_fragm,transaction,R.layout.one_room_item_white);
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),1,GridLayoutManager.VERTICAL,false);
-                RoomsCreatedByMeRV.setLayoutManager(gridLayoutManager);
-                RoomsCreatedByMeRV.setAdapter(adapter);
-                RoomsCreatedByMeRV.setClickable(true);
-            }
-        });
 
         room.GetMyJoinedRooms(getContext(), new OnDataRecievedRooms() {
             @Override
@@ -97,29 +70,36 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
                 Log.d("Public rooms",rooms.toString());
                 joined_rooms = rooms;
 
-                AdapterOneRoom adapter = new AdapterOneRoom(getContext(),joined_rooms,create_room_fragm,transaction,R.layout.one_room_item_white);
+                AdapterOneRoom adapter = new AdapterOneRoom(getContext(), joined_rooms, R.layout.one_room_item_white, new OnDataRecievedRoom() {
+                    @Override
+                    public void callback(Room room) {
+                        if(room == null){
+                            MyJoinedRoomFragment fragment =  new MyJoinedRoomFragment();
+                            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                            transaction.replace(R.id.fragment_container, fragment);
+                            transaction.addToBackStack(null);
+                            transaction.commit();
+                        }
+                        else{
+                            Log.d("room_from_adapter",room.room_name);
+                            // go to chat
+                            ChatChatChatRoomFragment charRoomFragment =  new ChatChatChatRoomFragment();
+                            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                            transaction.replace(R.id.fragment_container, charRoomFragment);
+                            transaction.addToBackStack(null);
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("room_id",room.room_id);
+
+                            charRoomFragment.setArguments(bundle);
+                            transaction.commit();
+                        }
+                    }
+                });
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),1,GridLayoutManager.VERTICAL,false);
                 JoinedRoomsRV.setLayoutManager(gridLayoutManager);
                 JoinedRoomsRV.setAdapter(adapter);
                 JoinedRoomsRV.setClickable(true);
-            }
-        });
-
-
-
-        CreateRoomBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CreateRoomFragment newFragment = new CreateRoomFragment();
-
-                Bundle bundle = new Bundle();
-                bundle.putString("key", "AYA 9OLNA SALAM");
-
-                newFragment.setArguments(bundle);
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, newFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
             }
         });
 
@@ -138,8 +118,6 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
                 transaction.commit();
             }
         });
-
-
 
     }
 

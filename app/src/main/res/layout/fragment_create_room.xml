@@ -115,7 +115,7 @@
 
 
                 <Button
-                    android:id="@+id/CancelBtn"
+                    android:id="@+id/CancelPrivBtn"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
@@ -127,7 +127,7 @@
                     android:textSize="16dp"/>
 
                 <Button
-                    android:id="@+id/CreateRoomBtn"
+                    android:id="@+id/JoinPrivRoomBtn"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
