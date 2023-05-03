@@ -22,7 +22,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
+import Helpers.ApiSender;
 import Interfaces.OnDataRecieve;
 import Interfaces.OnDataRecievedRoom;
 
@@ -399,6 +401,60 @@ public class User {
 
     }
 
+    public void FortgetPassword(Context context, String email, OnDataRecieve callback){
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userBD_ref = database.getReference("users");
+        Query checkID = userBD_ref.orderByChild("email").equalTo(email);
+        checkID.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    for (DataSnapshot snap_data : snapshot.getChildren()) {
+                        User bd_user = snap_data.getValue(User.class);
+                        Log.d("user retreaved","Welcome " + bd_user.userName);
+                        String password = generatePassword();
+
+                        Map<String, Object> updatedValues = new HashMap<>();
+                        updatedValues.put("password",password);
+                        userBD_ref.child(bd_user.num_tel).updateChildren(updatedValues, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                if (error == null) {
+                                    callback.callback();
+
+                                    String apiUrl = "https://mailing-mnhj.onrender.com/api/send";
+
+
+                                    String content = "here is your new password '" + password + "' please make sure to change it once you entered to the app from profile page";
+                                    String subject = "new password mini_android_project";
+                                    String postData = "{\"email\":\"" + email + "\",\"content\":\"" + content + "\",\"subject\":\"" + subject + "\"}";
+
+                                    new ApiSender(apiUrl, postData).execute();
+                                    Toast.makeText(context, "a temporary password was sent to your mail", Toast.LENGTH_SHORT).show();
+
+                                } else {
+                                    callback.callback();
+                                    Toast.makeText(context, "Can't send mail", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                }
+                else{
+                    Toast.makeText(context, "No user with that email", Toast.LENGTH_SHORT).show();
+                    callback.callback();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("room login error","Can't send mail");
+                callback.callback();
+            }
+        });
+
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -410,8 +466,22 @@ public class User {
                 ", connected=" + connected +
                 '}';
     }
+        public  String generatePassword() {
+            String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
+            StringBuilder sb = new StringBuilder();
 
-}
+            for (int i = 0; i < 8; i++) {
+                int index = random.nextInt(CHARACTERS.length());
+                sb.append(CHARACTERS.charAt(index));
+            }
+
+            return sb.toString();
+        }
+
+
+    }
+
 
 
 // list if images :

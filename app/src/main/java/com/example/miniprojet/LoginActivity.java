@@ -1,12 +1,9 @@
 package com.example.miniprojet;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,24 +12,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import AppClasses.User;
+import Interfaces.OnDataRecieve;
 
 public class LoginActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://miniprojet-android-8900a-default-rtdb.firebaseio.com");
@@ -63,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initView() {
         emailInput = findViewById(R.id.emailET);
-        passwordInput = findViewById(R.id.passwordET);
+        passwordInput = findViewById(R.id.mailET);
         loginBtn = findViewById(R.id.loginBT);
         signupBtn = findViewById(R.id.goSignupBT);
         forgetPasswordTV = findViewById(R.id.forgetPasswordTV);
@@ -106,31 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("callback","jawna mouch bahi");
                 };
 
-
-//                // Initialize Firebase Auth
-//                mAuth = FirebaseAuth.getInstance();
-//                mAuth.signInWithEmailAndPassword(email, password)
-//                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<AuthResult> task) {
-//                                if (task.isSuccessful()) {
-//                                    Log.d("Authentication succeeded.", "");
-////                                    Toast.makeText(LoginActivity.this, "Authentication succeeded.",
-////                                            Toast.LENGTH_SHORT).show();
-//
-//                                } else {
-//                                    Log.d("Authentication failed.", "");
-////                                    Toast.makeText(LoginActivity.this, "Authentication failed.",
-////                                            Toast.LENGTH_SHORT).show();
-//
-//                                }
-//                            }
-//                        });
-
-
                 user.UserLogin(LoginActivity.this,email,password,success,fail);
-
-
             }
         });
 
@@ -141,7 +104,6 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-
         });
 
         forgetPasswordTV.setOnClickListener(new View.OnClickListener() {
@@ -153,6 +115,25 @@ public class LoginActivity extends AppCompatActivity {
 
                 AlertDialog dialog = builder.create();
                 dialog.show();
+
+                EditText emailET = dialog_view.findViewById(R.id.mailET);
+                Button ButtonSend = dialog_view.findViewById(R.id.confirmForgetPasswordBT);
+
+                ButtonSend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String email = emailET.getText().toString();
+                        User user = new User();
+                        user.FortgetPassword(LoginActivity.this, email, new OnDataRecieve() {
+                            @Override
+                            public void callback() {
+                                dialog.dismiss();
+                            }
+                        });
+
+                    }
+                });
+
             }
         });
 

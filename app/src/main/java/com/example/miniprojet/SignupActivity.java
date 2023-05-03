@@ -1,11 +1,8 @@
 package com.example.miniprojet;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,15 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import AppClasses.User;
 
@@ -56,7 +47,7 @@ public class SignupActivity extends AppCompatActivity {
         usernameInput = findViewById(R.id.usernameET);
         emailInput = findViewById(R.id.emailET);
         phoneInput = findViewById(R.id.phoneET);
-        passwordInput = findViewById(R.id.passwordET);
+        passwordInput = findViewById(R.id.mailET);
         confPassInput = findViewById(R.id.confirmPasswordET);
         loginBtn = findViewById(R.id.goLoginBT);
         signupBtn = findViewById(R.id.signupBT);
