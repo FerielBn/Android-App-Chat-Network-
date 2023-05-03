@@ -15,8 +15,6 @@ public class HomeFragment extends Fragment {
 
     private TextView user_details;
 
-public class HomeFragment extends Fragment {
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,8 +33,4 @@ public class HomeFragment extends Fragment {
     }
 
 
-
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
-    }
 }

@@ -70,8 +70,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MyJoinedRoomFragment()).commit();
                 break;
 
-            case R.id.nav_settings:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment()).commit();
+            case R.id.nav_global_chat:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new GlobalChatFragment()).commit();
+                break;
+
+            case R.id.nav_profile:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
                 break;
 
             case R.id.nav_share:
@@ -80,6 +84,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.nav_about:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AboutFragment()).commit();
+                break;
+
+            case R.id.nav_settings:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment()).commit();
                 break;
 
             case R.id.nav_logout:

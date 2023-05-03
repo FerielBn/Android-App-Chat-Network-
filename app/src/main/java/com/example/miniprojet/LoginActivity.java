@@ -1,5 +1,6 @@
 package com.example.miniprojet;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -19,7 +20,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView forgetPasswordTV;
     private Button signupBtn, loginBtn;
     private User user;
-
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -99,6 +105,29 @@ public class LoginActivity extends AppCompatActivity {
                 Runnable fail = ()->{
                     Log.d("callback","jawna mouch bahi");
                 };
+
+
+//                // Initialize Firebase Auth
+//                mAuth = FirebaseAuth.getInstance();
+//                mAuth.signInWithEmailAndPassword(email, password)
+//                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<AuthResult> task) {
+//                                if (task.isSuccessful()) {
+//                                    Log.d("Authentication succeeded.", "");
+////                                    Toast.makeText(LoginActivity.this, "Authentication succeeded.",
+////                                            Toast.LENGTH_SHORT).show();
+//
+//                                } else {
+//                                    Log.d("Authentication failed.", "");
+////                                    Toast.makeText(LoginActivity.this, "Authentication failed.",
+////                                            Toast.LENGTH_SHORT).show();
+//
+//                                }
+//                            }
+//                        });
+
+
                 user.UserLogin(LoginActivity.this,email,password,success,fail);
 
 

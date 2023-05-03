@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,8 +30,7 @@ public class SignupActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://miniprojet-android-8900a-default-rtdb.firebaseio.com");
     private EditText usernameInput, emailInput,phoneInput, passwordInput,confPassInput;
     private Button signupBtn, loginBtn;
-
-
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +113,25 @@ public class SignupActivity extends AppCompatActivity {
                 Runnable fail = ()->{
                     Log.d("callback","jawna mouch bahi");
                 };
+
+//                // Initialize Firebase Auth
+//                mAuth = FirebaseAuth.getInstance();
+//                mAuth.createUserWithEmailAndPassword(email, password)
+//                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<AuthResult> task) {
+//                                if (task.isSuccessful()) {
+//                                    // Sign in success, update UI with the signed-in user's information
+//                                    Log.d("TAG", "createUserWithEmail:success");
+//
+//                                } else {
+//                                    // If sign in fails, display a message to the user.
+//                                    Log.w("TAG", "createUserWithEmail:failure", task.getException());
+//
+//                                }
+//                            }
+//                        });
+
 
                 User user = new User(phone,username,email,password);
                 user.UserRegister(SignupActivity.this,success,fail);
