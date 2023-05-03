@@ -107,11 +107,16 @@ public class ChatChatChatRoomFragment extends Fragment {
                                 @Override
                                 public void callback(ArrayList<Message> messages) {
                                     if(messages !=null ){
-                                        AdapterOneMessage adapter = new AdapterOneMessage(getContext(), messages);
-                                        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),1,GridLayoutManager.VERTICAL,false);
-                                        MesssagesRV.setLayoutManager(gridLayoutManager);
-                                        MesssagesRV.setAdapter(adapter);
-                                        MesssagesRV.setClickable(true);
+                                        try {
+                                            AdapterOneMessage adapter = new AdapterOneMessage(getContext(), messages);
+                                            GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),1,GridLayoutManager.VERTICAL,false);
+                                            MesssagesRV.setLayoutManager(gridLayoutManager);
+                                            MesssagesRV.setAdapter(adapter);
+                                            MesssagesRV.setClickable(true);
+                                        }catch ( Exception exception){
+                                            Log.d("error in contenxt","error in contenxt chat room");
+                                        }
+
                                     }
                                 }
                             });

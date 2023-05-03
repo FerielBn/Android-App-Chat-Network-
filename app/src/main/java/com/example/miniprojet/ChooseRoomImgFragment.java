@@ -2,6 +2,7 @@ package com.example.miniprojet;
 
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,12 +92,15 @@ public class ChooseRoomImgFragment extends Fragment implements LifecycleOwner{
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, create_room_fragm);
         transaction.addToBackStack(null);
-
-        AdapterOneRoomImg adapter = new AdapterOneRoomImg(getContext(),images,create_room_fragm,transaction);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),3,GridLayoutManager.VERTICAL,false);
-        ImageList.setLayoutManager(gridLayoutManager);
-        ImageList.setAdapter(adapter);
-        ImageList.setClickable(true);
+        try{
+            AdapterOneRoomImg adapter = new AdapterOneRoomImg(getContext(),images,create_room_fragm,transaction);
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),3,GridLayoutManager.VERTICAL,false);
+            ImageList.setLayoutManager(gridLayoutManager);
+            ImageList.setAdapter(adapter);
+            ImageList.setClickable(true);
+        }catch ( Exception exception){
+            Log.d("error in contenxt","error in contenxt choose room img");
+        }
 
     }
 
