@@ -73,6 +73,7 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
                 Log.d("Public rooms",rooms.toString());
                 created_rooms = rooms;
 
+                try{
                 AdapterOneRoom adapter = new AdapterOneRoom(getContext(), created_rooms, R.layout.one_room_item_white, new OnDataRecievedRoom() {
                     @Override
                     public void callback(Room room) {
@@ -103,6 +104,9 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
                 RoomsCreatedByMeRV.setLayoutManager(gridLayoutManager);
                 RoomsCreatedByMeRV.setAdapter(adapter);
                 RoomsCreatedByMeRV.setClickable(true);
+                }catch ( Exception exception){
+                    Log.d("error in contenxt","error in contenxt My Froom Fragment");
+                }
             }
         });
 

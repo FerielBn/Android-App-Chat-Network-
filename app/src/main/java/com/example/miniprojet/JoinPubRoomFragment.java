@@ -67,6 +67,7 @@ public class JoinPubRoomFragment extends Fragment {
                 if(rooms.size()==0){
                     Toast.makeText(getContext(), "You already joined all rooms", Toast.LENGTH_SHORT).show();
                 }
+            try{
                 AdapterOneRoom adapter = new AdapterOneRoom(getContext(), public_rooms, R.layout.one_room_item, new OnDataRecievedRoom() {
                     @Override
                     public void callback(Room room) {
@@ -97,6 +98,9 @@ public class JoinPubRoomFragment extends Fragment {
                 RoomsListRV.setLayoutManager(gridLayoutManager);
                 RoomsListRV.setAdapter(adapter);
                 RoomsListRV.setClickable(true);
+            }catch ( Exception exception){
+                Log.d("error in contenxt","error in contenxt Join Public Room");
+            }
             }
         });
 

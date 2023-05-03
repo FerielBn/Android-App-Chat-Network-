@@ -11,11 +11,12 @@
     </string-array>
     <string-array name="room_category">
         <item>Select Category</item>
-        <item>Categ2</item>
-        <item>Categ3</item>
-        <item>Categ4</item>
-        <item>Categ5</item>
-        <item>Categ6</item>
+        <item>Camping</item>
+        <item>Music</item>
+        <item>Gaming</item>
+        <item>Movies</item>
+        <item>Study</item>
+        <item>Science</item>
     </string-array>
     <string name="large_text">
         "Material is the metaphor.\n\n"

@@ -297,4 +297,3 @@ public class User {
   "https://res.cloudinary.com/hatem/image/upload/v1641410197/avatars/ldsmgj80efvcmnp5z9ao.png",
 
 */
-*/

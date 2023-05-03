@@ -69,7 +69,7 @@ public class MyJoinedRoomFragment extends Fragment implements LifecycleOwner {
             public void callback(ArrayList<Room> rooms) {
                 Log.d("Public rooms",rooms.toString());
                 joined_rooms = rooms;
-
+                try{
                 AdapterOneRoom adapter = new AdapterOneRoom(getContext(), joined_rooms, R.layout.one_room_item_white, new OnDataRecievedRoom() {
                     @Override
                     public void callback(Room room) {
@@ -100,6 +100,10 @@ public class MyJoinedRoomFragment extends Fragment implements LifecycleOwner {
                 JoinedRoomsRV.setLayoutManager(gridLayoutManager);
                 JoinedRoomsRV.setAdapter(adapter);
                 JoinedRoomsRV.setClickable(true);
+
+                }catch ( Exception exception){
+                    Log.d("error in contenxt","error in contenxt My Joined Room Fragment");
+                }
             }
         });
 
