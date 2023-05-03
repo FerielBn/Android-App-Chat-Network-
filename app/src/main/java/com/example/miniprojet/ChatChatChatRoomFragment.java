@@ -113,6 +113,7 @@ public class ChatChatChatRoomFragment extends Fragment {
                                             MesssagesRV.setLayoutManager(gridLayoutManager);
                                             MesssagesRV.setAdapter(adapter);
                                             MesssagesRV.setClickable(true);
+                                            MesssagesRV.scrollToPosition(messages.size()-1);
                                         }catch ( Exception exception){
                                             Log.d("error in contenxt","error in contenxt chat room");
                                         }
@@ -120,10 +121,6 @@ public class ChatChatChatRoomFragment extends Fragment {
                                     }
                                 }
                             });
-
-
-
-
 
                             SendButton.setOnClickListener(new View.OnClickListener() {
                                 @Override

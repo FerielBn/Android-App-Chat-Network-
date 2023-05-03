@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.miniprojet.MainActivity;
 import com.example.miniprojet.SignupActivity;
@@ -17,6 +18,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import Interfaces.OnDataRecieve;
+import Interfaces.OnDataRecievedRoom;
 
 public class User {
     public String num_tel="";
@@ -183,42 +191,7 @@ public class User {
          });
      }
 
-//   public void UserLogin(Context context,String email,String password,Runnable succ,Runnable fail){
-//       User user = this;
-//       FirebaseDatabase database = FirebaseDatabase.getInstance();
-//       DatabaseReference usersBD_ref = database.getReference("users");
-//       usersBD_ref.addValueEventListener(new ValueEventListener() {
-//               @Override
-//               public void onDataChange(@NonNull DataSnapshot snapshot) {
-//               Boolean exist=false;
-//               for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-//                   User bd_user = userSnapshot.getValue(User.class);
-//                   Log.d("user_from_bd",bd_user.toString());
-//                   if(bd_user.email.equals(email)){
-//                       if(bd_user.password.equals(password)){
-//                           Toast.makeText(context, "Welcome " + bd_user.userName, Toast.LENGTH_SHORT).show();
-//                           user.UpdateUser(bd_user,context);
-//                           Log.d("user_connect",user.toString());
-//                           exist=true;
-//                           succ.run();
-//                       }else{
-//                           Toast.makeText(context, "Wrong Password ", Toast.LENGTH_SHORT).show();
-//                           fail.run();
-//                       }
-//                   }
-//               }
-//               if(!exist){
-//                   Toast.makeText(context, "No User With That Email", Toast.LENGTH_SHORT).show();
-//                   fail.run();
-//               }
-//           }
-//           @Override
-//           public void onCancelled(@NonNull DatabaseError error) {
-//               fail.run();
-//           }
-//       });
-//   }
-//
+
 
 
     public void UserRegister(Context context,Runnable succ,Runnable fail){
@@ -269,6 +242,162 @@ public class User {
 
     // ****************************** THIS IS CONNECTION ****************************** //
 
+    public void ChangePassword(Context context, String password, OnDataRecieve callback){
+        User user = new User();
+        user.GetFromStorage(context);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userBD_ref = database.getReference("users");
+        Query checkID = userBD_ref.orderByChild("num_tel").equalTo(user.num_tel);
+        checkID.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    for (DataSnapshot snap_data : snapshot.getChildren()) {
+                        User bd_user = snap_data.getValue(User.class);
+                        Log.d("user retreaved","Welcome " + bd_user.userName);
+
+                        Map<String, Object> updatedValues = new HashMap<>();
+                        updatedValues.put("password",password);
+                        userBD_ref.child(bd_user.num_tel).updateChildren(updatedValues, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                if (error == null) {
+                                    callback.callback();
+
+                                    // update the changes in local
+                                    user.password=password;
+                                    user.UpdateUser(user,context);
+                                    // update the changes in local
+
+                                    Toast.makeText(context, "Password Updates Successfully", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    callback.callback();
+                                    Toast.makeText(context, "Can't update password", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                }
+                else{
+                    Toast.makeText(context, "Can't update password", Toast.LENGTH_SHORT).show();
+                    callback.callback();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("room login error","Can't update password");
+                callback.callback();
+            }
+        });
+
+    }
+
+    public void ChangeProfile(Context context, String user_name,String phone,String email, OnDataRecieve callback){
+        User user = new User();
+        user.GetFromStorage(context);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userBD_ref = database.getReference("users");
+        Query checkID = userBD_ref.orderByChild("num_tel").equalTo(user.num_tel);
+        checkID.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    for (DataSnapshot snap_data : snapshot.getChildren()) {
+                        User bd_user = snap_data.getValue(User.class);
+                        Log.d("user retreaved","Welcome " + bd_user.userName);
+
+                        Map<String, Object> updatedValues = new HashMap<>();
+                        updatedValues.put("userName",user_name);
+                        updatedValues.put("num_tel",phone);
+                        updatedValues.put("email",email);
+                        userBD_ref.child(bd_user.num_tel).updateChildren(updatedValues, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                if (error == null) {
+                                    callback.callback();
+
+                                    // update the changes in local
+                                    user.userName=user_name;
+                                    user.num_tel=phone;
+                                    user.email=email;
+                                    user.UpdateUser(user,context);
+                                    // update the changes in local
+
+                                    Toast.makeText(context, "user Updates Successfully", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    callback.callback();
+                                    Toast.makeText(context, "Can't update user", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                }
+                else{
+                    Toast.makeText(context, "Can't update user", Toast.LENGTH_SHORT).show();
+                    callback.callback();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("room login error","Can't update user");
+                callback.callback();
+            }
+        });
+
+    }
+
+    public void ChangeImageAvatar(Context context, String user_img, OnDataRecieve callback){
+        User user = new User();
+        user.GetFromStorage(context);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userBD_ref = database.getReference("users");
+        Query checkID = userBD_ref.orderByChild("num_tel").equalTo(user.num_tel);
+        checkID.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    for (DataSnapshot snap_data : snapshot.getChildren()) {
+                        User bd_user = snap_data.getValue(User.class);
+                        Log.d("user retreaved","Welcome " + bd_user.userName);
+
+                        Map<String, Object> updatedValues = new HashMap<>();
+                        updatedValues.put("user_img",user_img);
+                        userBD_ref.child(bd_user.num_tel).updateChildren(updatedValues, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                if (error == null) {
+                                    callback.callback();
+
+                                    // update the changes in local
+                                    user.user_img=user_img;
+                                    user.UpdateUser(user,context);
+                                    // update the changes in local
+
+                                    Toast.makeText(context, "image Updates Successfully", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    callback.callback();
+                                    Toast.makeText(context, "Can't update image", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                }
+                else{
+                    Toast.makeText(context, "Can't update image", Toast.LENGTH_SHORT).show();
+                    callback.callback();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("room login error","Can't update image");
+                callback.callback();
+            }
+        });
+
+    }
 
     @Override
     public String toString() {
@@ -311,3 +440,41 @@ public class User {
   "https://res.cloudinary.com/hatem/image/upload/v1641410197/avatars/ldsmgj80efvcmnp5z9ao.png",
 
 */
+
+
+//   public void UserLogin(Context context,String email,String password,Runnable succ,Runnable fail){
+//       User user = this;
+//       FirebaseDatabase database = FirebaseDatabase.getInstance();
+//       DatabaseReference usersBD_ref = database.getReference("users");
+//       usersBD_ref.addValueEventListener(new ValueEventListener() {
+//               @Override
+//               public void onDataChange(@NonNull DataSnapshot snapshot) {
+//               Boolean exist=false;
+//               for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+//                   User bd_user = userSnapshot.getValue(User.class);
+//                   Log.d("user_from_bd",bd_user.toString());
+//                   if(bd_user.email.equals(email)){
+//                       if(bd_user.password.equals(password)){
+//                           Toast.makeText(context, "Welcome " + bd_user.userName, Toast.LENGTH_SHORT).show();
+//                           user.UpdateUser(bd_user,context);
+//                           Log.d("user_connect",user.toString());
+//                           exist=true;
+//                           succ.run();
+//                       }else{
+//                           Toast.makeText(context, "Wrong Password ", Toast.LENGTH_SHORT).show();
+//                           fail.run();
+//                       }
+//                   }
+//               }
+//               if(!exist){
+//                   Toast.makeText(context, "No User With That Email", Toast.LENGTH_SHORT).show();
+//                   fail.run();
+//               }
+//           }
+//           @Override
+//           public void onCancelled(@NonNull DatabaseError error) {
+//               fail.run();
+//           }
+//       });
+//   }
+//

@@ -10,31 +10,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
+
+import Adapters.AdapterOneAvatarImage;
 import AppClasses.User;
+import Interfaces.OnDataRecieve;
+import Interfaces.OnDataRecieveImage;
 
 public class ProfileFragment extends Fragment {
     private Button update_password_btn, update_profile_btn;
     private TextView username_field, email_field;
     private EditText username_input, email_input, phone_input;
+    public ImageView userImage;
     String username, email, phone;
     User currentUser = new User();
 
@@ -42,7 +39,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
 
         currentUser.GetFromStorage(getContext());
@@ -50,6 +47,8 @@ public class ProfileFragment extends Fragment {
 
 
         update_password_btn = view.findViewById(R.id.updatePasswordBT);
+
+
         update_password_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,6 +59,8 @@ public class ProfileFragment extends Fragment {
 
 
         update_profile_btn = view.findViewById(R.id.updateProfileBT);
+
+
         update_profile_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,19 +68,27 @@ public class ProfileFragment extends Fragment {
                 email = email_input.getText().toString();
                 phone = phone_input.getText().toString();
 
-                User newUser = new User(username, email, phone);
-                Log.d("new user is ", newUser.toString());
-                currentUser.UpdateUser(newUser, getContext());
-                currentUser.UpdateStorage(getContext());
-                Toast.makeText(getActivity(), "Profile Updated !", Toast.LENGTH_SHORT).show();
+                User user = new User();
+                user.ChangeProfile(getContext(), username, phone, email, new OnDataRecieve() {
+                    @Override
+                    public void callback() {
+                        // 5adem 7aja lena kan t7eb
+                    }
+                });
+            }
+        });
 
+        userImage = view.findViewById(R.id.profile_image);
+        userImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialogImageSelect();
             }
         });
 
 
-        username_field = view.findViewById(R.id.username_field);
         email_field = view.findViewById(R.id.email_field);
-
+        username_field = view.findViewById(R.id.username_field);
         username_field.setText(currentUser.userName);
         email_field.setText(currentUser.email);
 
@@ -91,6 +100,9 @@ public class ProfileFragment extends Fragment {
         username_input.setText(currentUser.userName);
         email_input.setText(currentUser.email);
         phone_input.setText(currentUser.num_tel);
+        Glide.with(getActivity())
+                .load(currentUser.user_img)
+                .into(userImage);
 
 
         return view;
@@ -120,6 +132,8 @@ public class ProfileFragment extends Fragment {
                 String newPassword = newPasswordET.getText().toString().trim();
                 String confirmNewPassword = confirmNewPasswordET.getText().toString().trim();
 
+                User user = new User();
+                user.GetFromStorage(getActivity());
 
                 if(TextUtils.isEmpty(currentPassword)){
                     Toast.makeText(getActivity(), "Enter your current password ...", Toast.LENGTH_SHORT).show();
@@ -130,120 +144,88 @@ public class ProfileFragment extends Fragment {
                     return;
                 }
 
-                currentUser.GetFromStorage(getContext());
-                currentUser.setPassword(newPassword);
-                Log.d("new user is ", currentUser.toString());
-                currentUser.UpdateUser(currentUser, getContext());
-                currentUser.UpdateStorage(getContext());
-                Toast.makeText(getActivity(), "Profile Updated !", Toast.LENGTH_SHORT).show();
+                if(!user.password.equals(currentPassword)){
+                    Toast.makeText(getActivity(), "enter your current password correctly", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                dialog.dismiss();
+                if(!confirmNewPassword.equals(newPassword)){
+                    Toast.makeText(getActivity(), "password not matched", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-//                updatePassword(currentPassword, newPassword);
+                user.ChangePassword(getActivity(), newPassword, new OnDataRecieve() {
+                    @Override
+                    public void callback() {
+                        dialog.dismiss();
+                    }
+                });
+
 
             }
         });
     }
 
-    private void updatePassword(String currentPassword,String newPassword){
+    public void showDialogImageSelect() {
+        View dialog_view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_user_images, null);
 
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference usersBD = database.getReference("users");   // query to check if email already used
-//        Query checkMail = usersBD.orderByChild("email").equalTo(email);
-//
-//        checkMail.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.exists()) {
-//                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-//                        User bd_user = userSnapshot.getValue(User.class);
-//                        Log.d("TAG", "bd_user is: " + bd_user);
-//                        // Handle data changes here
-//                        currentUser.setPassword(newPassword);
-//                        currentUser.UpdateUser(bd_user, getContext());
-//                        currentUser.UpdateStorage(getContext());
-//                        Log.d("TAG", "current user is: " + currentUser);
-//                    }
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.d("user login error","error error");
-//
-//            }
-//        });
-//
+        RecyclerView ImagesRV;
+        ArrayList<String> images = new ArrayList<String>();;
+        ImagesRV = dialog_view.findViewById(R.id.ImageList);
 
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410201/avatars/pjyi7s4od1pqhl1sibyn.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410201/avatars/fkanrzk1kin3y8bpig0u.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410204/avatars/dfwjmmym5bz5vefnd5oo.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410202/avatars/ym0cf8yyf5frfz1kgoou.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410204/avatars/sagacd08kd1ekatcxlz7.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410209/avatars/at5qscqfixgmvfvyyyc4.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410209/avatars/ebbie0jw8oc8brbrxx1c.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410209/avatars/fnmr3g3v3ulxm6gb3ovr.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410208/avatars/yr5qadehapvhhu5c8bb7.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410207/avatars/dla0dltwqsx6ho4f8csn.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410207/avatars/awjum6vrcknfepbnk2fn.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410206/avatars/q2hjex2i6hlu7gxtdacl.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410207/avatars/iazxvgllrwpdffdgvmra.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410204/avatars/djlhw6avzkzbyjrdaipg.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410204/avatars/d7j98fpyusbajzxici4t.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410201/avatars/zlsq5ahiinurwp7hc2nl.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410201/avatars/maquune1vsok39oc6mt9.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410200/avatars/wddztcg0knmsol3ukgdy.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410199/avatars/ubbi9p6v0bucxybm21sa.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410198/avatars/n4xj8meo7vlmyjtwaatm.png");
+        images.add("https://res.cloudinary.com/hatem/image/upload/v1641410197/avatars/ldsmgj80efvcmnp5z9ao.png");
 
-//        get currrent user ?????????????
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(dialog_view);
 
-//        FirebaseAuth firebaseAuth;
-//        firebaseAuth = FirebaseAuth.getInstance();
-//        FirebaseUser user = firebaseAuth.getCurrentUser();
-//        Log.d("firebaseuser", user.toString());
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
-//
-//                //extract data
-//            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-//            ref.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    User user = snapshot.getValue(User.class);
-//                    Log.d("user from bd = ", user.toString());
-//
-//                    if(user !=null){
-//
-//                        String pass =user.password;
-//                        passwordInput.setText(pass);
-//
-//
-//                    }
-//
-////                }
-////
-////            });
-////
-////
-//
-//
-//
-//
-////        validate data
-//        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.email, currentPassword);
-//        user.reauthenticate(authCredential)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void unused) {
-//
-////                                update password
-//                                user.updatePassword(newPassword)
-//                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                            @Override
-//                                            public void onSuccess(Void unused) {
-//                                                Toast.makeText(getActivity(), "Password updated successfully !", Toast.LENGTH_SHORT).show();
-//                                            }
-//                                        })
-//                                        .addOnFailureListener(new OnFailureListener() {
-//                                            @Override
-//                                            public void onFailure(@NonNull Exception e) {
-//                                                Toast.makeText(getActivity(), ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-//                                            }
-//                                        });
-//
-//
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Toast.makeText(getActivity(), ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
+        try{
+            AdapterOneAvatarImage adapter = new AdapterOneAvatarImage(getContext(), images, new OnDataRecieveImage() {
+                @Override
+                public void callback(String img_url) {
+                    User user = new User();
+                    user.ChangeImageAvatar(getActivity(), img_url, new OnDataRecieve() {
+                        @Override
+                        public void callback() {
+                            Glide.with(getActivity())
+                                    .load(img_url)
+                                    .into(userImage);
+                            dialog.dismiss();
+                        }
+                    });
+                }
+            });
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),3,GridLayoutManager.VERTICAL,false);
+            ImagesRV.setLayoutManager(gridLayoutManager);
+            ImagesRV.setAdapter(adapter);
+            ImagesRV.setClickable(true);
+        }catch ( Exception exception){
+            Log.d("error in contenxt","error in contenxt choose room img");
+        }
 
 
     }
-
-
-
 
 }
