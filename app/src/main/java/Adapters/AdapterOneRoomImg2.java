@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentTransaction;
@@ -19,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.miniprojet.CreateRoomFragment;
 import com.example.miniprojet.R;
+import com.example.miniprojet.UpdateRoomFragment;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -26,17 +26,16 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.List;
 
-public class AdapterOneRoomImg extends RecyclerView.Adapter<AdapterOneRoomImg.ViewHolder> {
+public class AdapterOneRoomImg2 extends RecyclerView.Adapter<AdapterOneRoomImg2.ViewHolder> {
 
     ArrayList<String> images;
     Context context;
     LayoutInflater inflater;
-    CreateRoomFragment fragment;
+    UpdateRoomFragment fragment;
     FragmentTransaction transaction;
 
-    public AdapterOneRoomImg(Context ctx, ArrayList<String> images,CreateRoomFragment fragment,FragmentTransaction transaction){
+    public AdapterOneRoomImg2(Context ctx, ArrayList<String> images, UpdateRoomFragment fragment, FragmentTransaction transaction){
         this.context=ctx;
         this.images=images;
         this.inflater = LayoutInflater.from(ctx);

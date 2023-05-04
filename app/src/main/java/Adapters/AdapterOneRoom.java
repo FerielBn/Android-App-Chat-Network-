@@ -2,6 +2,8 @@ package Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -16,11 +18,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.miniprojet.ChatChatChatRoomFragment;
 import com.example.miniprojet.CreateRoomFragment;
+import com.example.miniprojet.LoginActivity;
+import com.example.miniprojet.MainActivity;
 import com.example.miniprojet.R;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -34,6 +40,7 @@ import java.util.ArrayList;
 
 import AppClasses.Room;
 import AppClasses.User;
+import Interfaces.OnDataRecieve;
 import Interfaces.OnDataRecievedRoom;
 
 public class AdapterOneRoom extends RecyclerView.Adapter<AdapterOneRoom.ViewHolder> {
@@ -91,8 +98,32 @@ public class AdapterOneRoom extends RecyclerView.Adapter<AdapterOneRoom.ViewHold
             holder.DeleteRoom.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(context, "I will delete " + room.room_name, Toast.LENGTH_SHORT).show();
-                    callback.callback(null);
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Delete Room" + room.room_name);
+                    builder.setMessage("Are you sure you want to delete ?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                            Toast.makeText(context, "I will delete " + room.room_name, Toast.LENGTH_SHORT).show();
+                            room.DeleteRoom(context, room.room_id, new OnDataRecieve() {
+                                @Override
+                                public void callback() {
+                                    Toast.makeText(context, "Room deleted", Toast.LENGTH_SHORT).show();
+                                    callback.callback(null);
+                                }
+                            });
+
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int which) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    builder.show();
                 }
             });
 
@@ -100,7 +131,8 @@ public class AdapterOneRoom extends RecyclerView.Adapter<AdapterOneRoom.ViewHold
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(context, "I will Edit " + room.room_name, Toast.LENGTH_SHORT).show();
-                    callback.callback(null);
+                    room.owner = null;
+                    callback.callback(room);
                 }
             });
 

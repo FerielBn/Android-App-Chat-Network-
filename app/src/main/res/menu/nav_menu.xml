@@ -18,19 +18,18 @@
             android:title="My Rooms" />
 
         <item
-            android:id="@+id/nav_room_joined"
-            android:icon="@drawable/chat_group"
-            android:title="Joined Rooms" />
+            android:id="@+id/nav_room_join_public"
+            android:icon="@drawable/feedback"
+            android:title="Join Public Room" />
 
+        <item
+            android:id="@+id/join_privroom"
+            android:icon="@drawable/privacy_policy"
+            android:title="Join Private Room" />
         <item
             android:id="@+id/nav_global_chat"
             android:icon="@drawable/earth__1_"
             android:title="Global Chat" />
-
-        <item
-            android:id="@+id/nav_friends"
-            android:icon="@drawable/friends"
-            android:title="Friends" />
 
         <item
             android:id="@+id/nav_profile"

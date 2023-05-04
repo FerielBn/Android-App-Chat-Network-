@@ -28,7 +28,6 @@ import Interfaces.OnDataRecievedRooms;
 public class MyJoinedRoomFragment extends Fragment implements LifecycleOwner {
 
     private Lifecycle lifecycle;
-    private Button JoiRoomBtn;
     private RecyclerView JoinedRoomsRV;
     private ArrayList<Room> joined_rooms;
 
@@ -37,7 +36,6 @@ public class MyJoinedRoomFragment extends Fragment implements LifecycleOwner {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_joined_room, container, false);
-        JoiRoomBtn = view.findViewById(R.id.JoinBtn);
         JoinedRoomsRV = view.findViewById(R.id.JoinedRoomsRV);
         return view;
     }
@@ -104,22 +102,6 @@ public class MyJoinedRoomFragment extends Fragment implements LifecycleOwner {
                 }catch ( Exception exception){
                     Log.d("error in contenxt","error in contenxt My Joined Room Fragment");
                 }
-            }
-        });
-
-        JoiRoomBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                JoinRoomFragment newFragment = new JoinRoomFragment();
-
-                Bundle bundle = new Bundle();
-                bundle.putString("key", "AYA 9OLNA SALAM");
-
-                newFragment.setArguments(bundle);
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, newFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
             }
         });
 

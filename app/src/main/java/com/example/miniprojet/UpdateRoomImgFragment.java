@@ -6,10 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -21,11 +17,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import Adapters.AdapterOneRoomImg;
+import Adapters.AdapterOneRoomImg2;
 
-public class ChooseRoomImgFragment extends Fragment implements LifecycleOwner{
+public class UpdateRoomImgFragment extends Fragment implements LifecycleOwner{
     private RecyclerView ImageList;
     private ArrayList<String> images;
 
@@ -88,12 +84,12 @@ public class ChooseRoomImgFragment extends Fragment implements LifecycleOwner{
 
 
         // here a code to go back to CreateRoomFragment with selected Item
-        CreateRoomFragment create_room_fragm =  new CreateRoomFragment();
+        UpdateRoomFragment update_room_fragm =  new UpdateRoomFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, create_room_fragm);
+        transaction.replace(R.id.fragment_container, update_room_fragm);
         transaction.addToBackStack(null);
         try{
-            AdapterOneRoomImg adapter = new AdapterOneRoomImg(getContext(),images,create_room_fragm,transaction);
+            AdapterOneRoomImg2 adapter = new AdapterOneRoomImg2(getContext(),images,update_room_fragm,transaction);
             GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),3,GridLayoutManager.VERTICAL,false);
             ImageList.setLayoutManager(gridLayoutManager);
             ImageList.setAdapter(adapter);

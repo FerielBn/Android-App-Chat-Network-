@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MyJoinedRoomFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_home);
 
         }
@@ -59,19 +60,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()){
             case R.id.nav_home:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MyJoinedRoomFragment()).commit();
                 break;
 
             case R.id.nav_room:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MyRoomFragment()).commit();
                 break;
 
-            case R.id.nav_room_joined:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MyJoinedRoomFragment()).commit();
+            case R.id.nav_room_join_public:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new JoinPubRoomFragment()).commit();
+                break;
+
+            case R.id.join_privroom:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new JoinPrivRoom()).commit();
                 break;
 
             case R.id.nav_global_chat:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new GlobalChatFragment()).commit();
+
+                ChatChatChatRoomFragment charRoomFragment =  new ChatChatChatRoomFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("room_id","-NU_wt2-B551yfUR9Kp8");
+                charRoomFragment.setArguments(bundle);
+
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, charRoomFragment).commit();
                 break;
 
             case R.id.nav_profile:

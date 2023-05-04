@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import Interfaces.OnDataRecieve;
 import Interfaces.OnDataRecievedRoom;
 import Interfaces.OnDataRecievedRooms;
 
@@ -272,7 +273,7 @@ public class Room {
                         ArrayList<User> users_in_room= bd_room.users;
                         boolean exist_in_room=false;
                         for (User user_in_room : users_in_room){
-                            if(user_in_room.num_tel.equals(user.num_tel)){
+                            if(user_in_room.num_tel.equals(user.num_tel) || bd_room.room_name.equals("Global Chat")){
                                 exist_in_room = true;
                             }
                         }
@@ -352,7 +353,7 @@ public class Room {
                     count++;
                     ArrayList<User> users_in_room= bd_room.users;
                     for (User user_in_room : users_in_room){
-                        if(user_in_room.num_tel.equals(user.num_tel) && !bd_room.owner.num_tel.equals(user.num_tel)){
+                        if(user_in_room.num_tel.equals(user.num_tel) && !bd_room.owner.num_tel.equals(user.num_tel) &&  !bd_room.room_name.equals("Global Chat")){
                             my_joined_rooms.add(bd_room);
                         }
                     }
@@ -396,6 +397,70 @@ public class Room {
                 callback.callback(null);
             }
         });
+
+    }
+
+    public void UpdateRoom(Context context, String room_id,String room_image,String room_name,String room_key,String category,Boolean room_public, OnDataRecieve callback){
+        User user = new User();
+        user.GetFromStorage(context);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference roomsBD_ref = database.getReference("rooms");
+        Query checkID = roomsBD_ref.orderByChild("room_id").equalTo(room_id);
+        checkID.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    for (DataSnapshot snap_data : snapshot.getChildren()) {
+                        Room bd_room = snap_data.getValue(Room.class);
+                        Log.d("room retreaved","Welcome ");
+
+                        Map<String, Object> updatedValues = new HashMap<>();
+                        updatedValues.put("room_image",room_image);
+                        updatedValues.put("room_name",room_name);
+                        updatedValues.put("room_key",room_key);
+                        updatedValues.put("category",category);
+                        updatedValues.put("room_public",room_public);
+                        roomsBD_ref.child(bd_room.room_id).updateChildren(updatedValues, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                if (error == null) {
+                                    callback.callback();
+
+                                    // update the changes in local
+
+                                    // update the changes in local
+
+                                    Toast.makeText(context, "Room Updates Successfully", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    callback.callback();
+                                    Toast.makeText(context, "Can't update room 1", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                }
+                else{
+                    Toast.makeText(context, "Can't update room 2", Toast.LENGTH_SHORT).show();
+                    callback.callback();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("room login error","Can't update user");
+                callback.callback();
+            }
+        });
+
+    }
+
+
+    public void DeleteRoom(Context context, String room_id , OnDataRecieve callback){
+        User user = new User();
+        user.GetFromStorage(context);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference roomsBD_ref = database.getReference("rooms");
+        roomsBD_ref.child(room_id).removeValue();
+        callback.callback();
 
     }
 

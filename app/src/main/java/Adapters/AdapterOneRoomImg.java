@@ -79,7 +79,7 @@ public class AdapterOneRoomImg extends RecyclerView.Adapter<AdapterOneRoomImg.Vi
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString("image", images.get(position));
+                bundle.putString("room_image", images.get(position));
                 fragment.setArguments(bundle);
                 transaction.commit();
             }

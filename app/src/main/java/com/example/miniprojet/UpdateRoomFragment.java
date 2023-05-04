@@ -1,14 +1,8 @@
 package com.example.miniprojet;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.OnLifecycleEvent;
-
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,30 +12,45 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import AppClasses.Room;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.OnLifecycleEvent;
 
-public class CreateRoomFragment extends Fragment implements LifecycleOwner, AdapterView.OnItemSelectedListener{
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+
+import AppClasses.Room;
+import Interfaces.OnDataRecieve;
+
+public class UpdateRoomFragment extends Fragment implements LifecycleOwner, AdapterView.OnItemSelectedListener{
     private Lifecycle lifecycle;
     private Spinner RoomAccess ;
     private Spinner RoomCateg ;
     private EditText RoomKey;
     private TextView RoomName;
-    private Button AddImgBtn;
+    private ImageView AddImgBtn;
     private Button CancelBtn;
     private Button SubmitBtn;
 
     private String room_selected_img ="";
     private String room_selected_access ="";
     private String room_selected_categ ="";
+    public String roomImage="";
+    public String room_id="";
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_create_room, container, false);
+        View view = inflater.inflate(R.layout.fragment_update_room, container, false);
         RoomAccess = view.findViewById(R.id.accessibility_select);
         RoomCateg = view.findViewById(R.id.category_select);
         RoomKey = view.findViewById(R.id.room_key);
@@ -49,6 +58,11 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
         AddImgBtn = view.findViewById(R.id.AddImgBtn);
         CancelBtn = view.findViewById(R.id.CancelPrivBtn);
         SubmitBtn = view.findViewById(R.id.JoinPrivRoomBtn);
+
+        Glide.with(getContext())
+                .load("https://res.cloudinary.com/hatem/image/upload/v1683220620/rooms/ukllerhc7iffqh5xfagm.png")
+                .into(AddImgBtn);
+
         return view;
     }
 
@@ -62,11 +76,9 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onStart() {
         super.onStart();
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            String value = bundle.getString("image","");
-            this.room_selected_img = value;
-        }
+
+
+
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.accessibility, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -78,10 +90,63 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
         RoomCateg.setAdapter(adapter2);
         RoomCateg.setOnItemSelectedListener(this);
 
+
+
+        SharedPreferences shared = getContext().getSharedPreferences("room", Context.MODE_PRIVATE);
+        if (shared != null) {
+
+            roomImage = shared.getString("room_image","");
+            room_id = shared.getString("room_id","");
+            String room_name = shared.getString("room_name","");
+            String room_key = shared.getString("room_key","");
+            String category = shared.getString("category","");
+            Boolean room_public = shared.getBoolean("room_public",false);
+
+            //Log.d("room",room_image);
+            //Log.d("room",room_name);
+            //Log.d("room",room_key);
+            //Log.d("room",category);
+            //Log.d("room",room_id);
+            //room_public
+
+            ArrayList<String> categs = new ArrayList<>();
+            categs.add("Select Category");
+            categs.add("Camping");
+            categs.add("Music");
+            categs.add("Gaming");
+            categs.add("Movies");
+            categs.add("Study");
+            categs.add("Science");
+
+            RoomAccess.setSelection(room_public ? 1 :2);
+            RoomCateg.setSelection(categs.indexOf(category));
+            RoomKey.setText(room_key);
+            RoomName.setText(room_name);
+            //AddImgBtn
+
+            this.room_selected_img = roomImage;
+            Glide.with(getContext())
+                    .load(roomImage)
+                    .into(AddImgBtn);
+
+            Bundle bundle = getArguments();
+            if (bundle != null) {
+                String value = bundle.getString("room_image","");
+                Glide.with(getContext())
+                        .load(value)
+                        .into(AddImgBtn);
+                roomImage= value;
+                this.room_selected_img = value;
+            }
+
+        }
+
+
+
         AddImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ChooseRoomImgFragment choose_img_fragment = new ChooseRoomImgFragment();
+                UpdateRoomImgFragment choose_img_fragment = new UpdateRoomImgFragment();
 
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, choose_img_fragment);
@@ -129,22 +194,24 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
                     return;
                 }
 
-                Log.d("create_room",room_name);
-                Log.d("create_room",room_selected_access);
-                Log.d("create_room",room_selected_categ);
-                Log.d("create_room",room_key);
-                Log.d("create_room",room_selected_img);
                 boolean room_public = room_selected_access.equals("Public");
 
-                Room room = new Room(room_name,room_key,room_selected_categ,room_selected_img,room_public,getContext());
-                room.CreateRoom(getContext());
+                Room room = new Room();
+                //room_name,room_key,room_selected_categ,room_selected_img,room_public,getContext()
+                room.UpdateRoom(getContext(), room_id, roomImage, room_name, room_key, room_selected_categ, room_public, new OnDataRecieve() {
+                    @Override
+                    public void callback() {
+                        // go back to main screen my rooms
+                        MyRoomFragment myRoomFragment = new MyRoomFragment();
 
-                MyRoomFragment myRoomFragment = new MyRoomFragment();
+                        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment_container, myRoomFragment);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
+                });
 
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, myRoomFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
+
             }
         });
 

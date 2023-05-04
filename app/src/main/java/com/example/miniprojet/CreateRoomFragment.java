@@ -18,9 +18,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import AppClasses.Room;
 
@@ -30,7 +33,7 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
     private Spinner RoomCateg ;
     private EditText RoomKey;
     private TextView RoomName;
-    private Button AddImgBtn;
+    private ImageView AddImgBtn;
     private Button CancelBtn;
     private Button SubmitBtn;
 
@@ -49,6 +52,11 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
         AddImgBtn = view.findViewById(R.id.AddImgBtn);
         CancelBtn = view.findViewById(R.id.CancelPrivBtn);
         SubmitBtn = view.findViewById(R.id.JoinPrivRoomBtn);
+
+        Glide.with(getContext())
+                .load("https://res.cloudinary.com/hatem/image/upload/v1683220620/rooms/ukllerhc7iffqh5xfagm.png")
+                .into(AddImgBtn);
+
         return view;
     }
 
@@ -62,11 +70,8 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onStart() {
         super.onStart();
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            String value = bundle.getString("image","");
-            this.room_selected_img = value;
-        }
+
+
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.accessibility, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -77,6 +82,15 @@ public class CreateRoomFragment extends Fragment implements LifecycleOwner, Adap
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         RoomCateg.setAdapter(adapter2);
         RoomCateg.setOnItemSelectedListener(this);
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String value = bundle.getString("room_image","");
+            Glide.with(getContext())
+                    .load(value)
+                    .into(AddImgBtn);
+            this.room_selected_img = value;
+        }
 
         AddImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override

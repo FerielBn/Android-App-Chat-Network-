@@ -1,6 +1,7 @@
 package com.example.miniprojet;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -78,6 +79,7 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
                     @Override
                     public void callback(Room room) {
                         if(room == null){
+                            // after you leave go back to a page
                             MyRoomFragment fragment =  new MyRoomFragment();
                             FragmentTransaction transaction = getFragmentManager().beginTransaction();
                             transaction.replace(R.id.fragment_container, fragment);
@@ -85,18 +87,41 @@ public class MyRoomFragment extends Fragment implements LifecycleOwner {
                             transaction.commit();
                         }
                         else{
-                            Log.d("room_from_adapter",room.room_name);
-                            // go to chat
-                            ChatChatChatRoomFragment charRoomFragment =  new ChatChatChatRoomFragment();
-                            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                            transaction.replace(R.id.fragment_container, charRoomFragment);
-                            transaction.addToBackStack(null);
+                            if(room.owner!=null){
+                                Log.d("room_from_adapter",room.room_name);
+                                // go to chat
+                                ChatChatChatRoomFragment charRoomFragment =  new ChatChatChatRoomFragment();
+                                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                transaction.replace(R.id.fragment_container, charRoomFragment);
+                                transaction.addToBackStack(null);
 
-                            Bundle bundle = new Bundle();
-                            bundle.putString("room_id",room.room_id);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("room_id",room.room_id);
 
-                            charRoomFragment.setArguments(bundle);
-                            transaction.commit();
+                                charRoomFragment.setArguments(bundle);
+                                transaction.commit();
+                            }else{
+                                Log.d("room_from_adapter",room.room_name);
+                                // it's an update
+                                UpdateRoomFragment updateRoomFragment =  new UpdateRoomFragment();
+                                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                transaction.replace(R.id.fragment_container, updateRoomFragment);
+                                transaction.addToBackStack(null);
+
+                                SharedPreferences shared = getContext().getSharedPreferences("room", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = shared.edit();
+
+                                editor.putString("room_image",room.room_image);
+                                editor.putString("room_name",room.room_name);
+                                editor.putString("room_key",room.room_key);
+                                editor.putString("category",room.category);
+                                editor.putString("room_id",room.room_id);
+                                editor.putBoolean("room_public",room.room_public);
+                                editor.apply();
+
+                                transaction.commit();
+                            }
+
                         }
                     }
                 });
