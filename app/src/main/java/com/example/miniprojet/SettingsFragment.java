@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -34,6 +36,8 @@ import com.google.firebase.ktx.Firebase;
 import AppClasses.User;
 
 public class SettingsFragment extends Fragment {
+    private Boolean wifiConnected, mobileConnected;
+    private TextView connectedTV;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -41,7 +45,32 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        connectedTV = view.findViewById(R.id.connectedTV);
+        checkNetworkConnection();
+
         return view;
+    }
+
+    private void checkNetworkConnection(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if(networkInfo != null && networkInfo.isConnected()){
+
+            wifiConnected = networkInfo.getType() == connectivityManager.TYPE_WIFI;
+            mobileConnected = networkInfo.getType() == connectivityManager.TYPE_MOBILE;
+
+            if(wifiConnected){
+                connectedTV.setText("Connected to wifi");
+            }else{
+                connectedTV.setText("Connected to Mobile");
+            }
+
+
+        }else{
+            connectedTV.setText("Not Connected");
+
+        }
     }
 
 }
